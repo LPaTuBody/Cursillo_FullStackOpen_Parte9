@@ -15,7 +15,7 @@ const parseArg = (args: string[]): {
   if (args.length < 4) throw new Error("Incorrect amount of arguments provided.");
 
   const goal = Number(args[2]);
-  const dailyExHours = args.filter((a, i) => (i >= 3)).map(Number);
+  const dailyExHours = args.filter((_a, i) => (i >= 3)).map(Number);
 
   if (!isNaN(goal) && dailyExHours.every(h => !isNaN(h))) {
     return { goal, dailyExHours };

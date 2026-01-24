@@ -14,7 +14,7 @@ const parseArguments = (args: string[]): {
   }
 };
 
-const calculateBmi = (height: number, weight: number): string => {
+export const calculateBmi = (height: number, weight: number): string => {
   // altura en cm y peso en kg
   const imc: number = weight / Math.pow((height / 100), 2);
   let msg: string = "";
