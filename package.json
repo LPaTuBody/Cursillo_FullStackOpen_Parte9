@@ -9,6 +9,7 @@
   "scripts": {
     "ts-node": "ts-node",
     "bmi": "ts-node bmiCalculator.ts",
+    "exc": "ts-node exerciseCalculator.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "devDependencies": {
