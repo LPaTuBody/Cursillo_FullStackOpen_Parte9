@@ -1,10 +1,23 @@
+const parseArguments = (args: string[]): {
+  height: number,
+  weight: number,
+} => {
+  if (args.length !== 4) throw new Error("Incorrect amount of arguments provided.");
 
+  const height = Number(args[2]);
+  const weight = Number(args[3]);
+
+  if (!isNaN(height) && !isNaN(weight)) {
+    return { height, weight };
+  } else {
+    throw new Error("Provided values need to be numbers.");
+  }
+};
 
 const calculateBmi = (height: number, weight: number): string => {
   // altura en cm y peso en kg
   const imc: number = weight / Math.pow((height / 100), 2);
   let msg: string = "";
-  console.log(imc);
 
   if (imc < 18.5) {
     msg = "Low - Weight below what is considered healthy.";
@@ -19,4 +32,13 @@ const calculateBmi = (height: number, weight: number): string => {
   return msg;
 };
 
-console.log(calculateBmi(171, 73));
+try {
+  const { height, weight } = parseArguments(process.argv);
+  console.log(calculateBmi(height, weight));
+} catch (err: unknown) {
+  let errMsg = "Something went wrong. ";
+  if (err instanceof Error) {
+    errMsg += err.message;
+  }
+  console.log(errMsg);
+};

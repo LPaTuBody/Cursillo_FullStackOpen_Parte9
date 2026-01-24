@@ -6,7 +6,23 @@ interface Result {
   goalAchieved: boolean,
   rating: number,
   ratingDescription: string,
-}
+};
+
+const parseArg = (args: string[]): {
+  goal: number,
+  dailyExHours: number[],
+} => {
+  if (args.length < 4) throw new Error("Incorrect amount of arguments provided.");
+
+  const goal = Number(args[2]);
+  const dailyExHours = args.filter((a, i) => (i >= 3)).map(Number);
+
+  if (!isNaN(goal) && dailyExHours.every(h => !isNaN(h))) {
+    return { goal, dailyExHours };
+  } else {
+    throw new Error("All provided values need to be numbers.");
+  };
+};
 
 const calculateExercises = (dailyExHours: number[], goal: number): Result => {
   const days = dailyExHours.length;
@@ -26,7 +42,7 @@ const calculateExercises = (dailyExHours: number[], goal: number): Result => {
   } else {
     rating = 3;
     ratingDescription = "keep it up, you're doing a great job";
-  }
+  };
 
   return {
     days,
@@ -36,9 +52,16 @@ const calculateExercises = (dailyExHours: number[], goal: number): Result => {
     goalAchieved,
     rating,
     ratingDescription,
-  }
+  };
 };
 
-console.log(calculateExercises([3, 0, 2, 4.5, 0, 3, 1], 2));
-console.log(calculateExercises([2, 4, 2, 0, 4, 0, 2], 2));
-console.log(calculateExercises([5, 4, 2, 3, 4, 1, 3], 3));
+try {
+  const { goal, dailyExHours } = parseArg(process.argv);
+  console.log(calculateExercises(dailyExHours, goal));
+} catch (err) {
+  let errMsg = "Something went wrong. ";
+  if (err instanceof Error) {
+    errMsg += err.message;
+  }
+  console.log(errMsg);
+}
