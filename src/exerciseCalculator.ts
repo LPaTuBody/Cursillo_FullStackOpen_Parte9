@@ -24,7 +24,10 @@ const parseArg = (args: string[]): {
   };
 };
 
-const calculateExercises = (dailyExHours: number[], goal: number): Result => {
+export const calculateExercises = (
+  dailyExHours: number[],
+  goal: number
+): Result => {
   const days = dailyExHours.length;
   const trainingDays = dailyExHours.filter(h => h !== 0).length;
   const ogGoal = goal;
