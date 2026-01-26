@@ -4,12 +4,18 @@ export interface Diagnose {
   latin?: string
 }
 
+export enum Gender {
+  M = "male",
+  F = "female",
+  N = "other"
+}
+
 export interface Patient {
   id: string
   name: string
   dateOfBirth: string
   ssn: string
-  gender: "male" | "female" | "other"
+  gender: Gender
   occupation: string
 }
 
