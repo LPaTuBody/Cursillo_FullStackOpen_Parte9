@@ -1,6 +1,8 @@
-import { Router } from "express";
+import { Router, Request, Response } from "express";
 import { getNSDPatients, addPatient } from "../services/patientService";
-import { toNewPatientParser } from "../utils/toNewPatServ";
+import { newPatient, Patient } from "../types";
+import newPatientParser from "../middleware/newPatientParserMw";
+import errorMiddleware from "../middleware/errorMw";
 
 const router = Router();
 
@@ -15,17 +17,15 @@ router.get("/", (_req, res) => {
   }
 });
 
-router.post("/", (req, res) => {
-  try {
-    const patientEntries = toNewPatientParser(req.body);
-    const newPat = addPatient(patientEntries);
-    console.log("New patient:", newPat);
-    res.json(newPat);
-  } catch (err: unknown) {
-    let errMsg = "Something went wrong.";
-    if (err instanceof Error) errMsg += " Error: " + err.message;
-    res.status(400).send(errMsg);
-  }
+router.post("/", newPatientParser, (
+  req: Request<unknown, unknown, newPatient>,
+  res: Response<Patient>
+) => {
+  const newPat = addPatient(req.body);
+  console.log("New patient:", newPat);
+  res.json(newPat);
 });
+
+router.use(errorMiddleware);
 
 export default router;
