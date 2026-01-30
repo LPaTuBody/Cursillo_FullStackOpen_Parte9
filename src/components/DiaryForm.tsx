@@ -5,11 +5,13 @@ import {
   type SyntheticEvent,
   type SetStateAction
 } from "react";
-import type {
-  DiaryEntry,
-  NonSensitiveDiaryEntry,
-  NotiType,
-  NewDiaryEntry
+import {
+  type DiaryEntry,
+  type NonSensitiveDiaryEntry,
+  type NotiType,
+  type NewDiaryEntry,
+  Weather,
+  Visibility
 } from "../types";
 import diaryService from "../services/diaryService";
 import Notification from "./Notification";
@@ -29,7 +31,7 @@ const DiaryForm = ({ diaries, setDiaries }: DiaryFormProps) => {
   const [noti, setNoti] = useState<NotiType>(notiDefState);
 
   useEffect(() => {
-    if (!!noti.msg) {
+    if (noti.msg) {
       setTimeout(() => setNoti(notiDefState), 5000);
     }
   }, [noti]);
@@ -47,7 +49,6 @@ const DiaryForm = ({ diaries, setDiaries }: DiaryFormProps) => {
       const newEntry: NewDiaryEntry = result.data;
 
       diaryService.postDiaries(newEntry).then((d: string | DiaryEntry) => {
-        console.log(d)
         if (typeof d === "string") setNoti({ msg: d, nType: 0 });
         else {
           console.log("New entry added:", d);
@@ -69,37 +70,51 @@ const DiaryForm = ({ diaries, setDiaries }: DiaryFormProps) => {
       <Notification noti={noti} />
       <form
         onSubmit={handleSubmit}
-        style={{ display: "flex", flexDirection: "column", gap: 10 }}
+        style={{ display: "flex", flexDirection: "column", gap: 15 }}
       >
         <div>
-          <label htmlFor="date">Date</label>
+          <label htmlFor="date">Date </label>
           <input
-            type="text"
+            type="date"
             id="date"
             value={date}
             onChange={({ target }) => setDate(target.value)}
           />
         </div>
         <div>
-          <label htmlFor="visibility">Visibility</label>
-          <input
-            type="text"
-            id="visibility"
-            value={visibility}
-            onChange={({ target }) => setVisibility(target.value)}
-          />
+          <p style={{ margin: 0 }}>Visibility: </p>
+          {Object.values(Visibility).map(v => (
+            <div key={v}>
+              <input
+                type="radio"
+                name="visibility"
+                id={v}
+                value={v}
+                checked={visibility === v}
+                onChange={({ target }) => setVisibility(target.value)}
+              />
+              <label htmlFor={v}>{v}</label>
+            </div>
+          ))}
         </div>
         <div>
-          <label htmlFor="weather">Weather</label>
-          <input
-            type="text"
-            id="weather"
-            value={weather}
-            onChange={({ target }) => setWeather(target.value)}
-          />
+          <p style={{ margin: 0 }}>Weather: </p>
+          {Object.values(Weather).map(w => (
+            <div key={w}>
+              <input
+                type="radio"
+                name="weather"
+                id={w}
+                value={w}
+                checked={weather === w}
+                onChange={({ target }) => setWeather(target.value)}
+              />
+              <label htmlFor={w}>{w}</label>
+            </div>
+          ))}
         </div>
         <div>
-          <label htmlFor="comment">Comment</label>
+          <label htmlFor="comment">Comment </label>
           <input
             type="text"
             id="comment"
