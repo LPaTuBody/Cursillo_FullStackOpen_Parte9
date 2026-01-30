@@ -1,20 +1,29 @@
 import { useState } from "react";
-import { Box, Table, Button, TableHead, Typography, TableCell, TableRow, TableBody } from '@mui/material';
+import { useNavigate } from "react-router-dom";
+import {
+  Box,
+  Table,
+  Button,
+  TableHead,
+  Typography,
+  TableCell,
+  TableRow,
+  TableBody
+} from '@mui/material';
 import axios from 'axios';
 
 import { PatientFormValues, Patient } from "../../types";
 import AddPatientModal from "../AddPatientModal";
-
 import HealthRatingBar from "../HealthRatingBar";
-
 import patientService from "../../services/patients";
 
 interface Props {
-  patients : Patient[]
+  patients: Patient[]
   setPatients: React.Dispatch<React.SetStateAction<Patient[]>>
 }
 
-const PatientListPage = ({ patients, setPatients } : Props ) => {
+const PatientListPage = ({ patients, setPatients }: Props) => {
+  const navigate = useNavigate();
 
   const [modalOpen, setModalOpen] = useState<boolean>(false);
   const [error, setError] = useState<string>();
@@ -37,6 +46,14 @@ const PatientListPage = ({ patients, setPatients } : Props ) => {
           const message = e.response.data.replace('Something went wrong. Error: ', '');
           console.error(message);
           setError(message);
+        } else if (e?.response?.data && typeof e.response.data === "object") {
+          const errorData = e.response.data as { error: { path: string[], message: string }[] };
+          if (errorData.error && Array.isArray(errorData.error)) {
+            const messages = errorData.error.map(issue => `${issue.path.join('.')}: ${issue.message}`).join(', ');
+            setError(messages);
+          } else {
+            setError("Unrecognized validation error");
+          }
         } else {
           setError("Unrecognized axios error");
         }
@@ -65,7 +82,12 @@ const PatientListPage = ({ patients, setPatients } : Props ) => {
         </TableHead>
         <TableBody>
           {Object.values(patients).map((patient: Patient) => (
-            <TableRow key={patient.id}>
+            <TableRow
+              key={patient.id}
+              hover
+              onClick={() => navigate(`/patient/${patient.id}`)}
+              sx={{ cursor: 'pointer' }}
+            >
               <TableCell>{patient.name}</TableCell>
               <TableCell>{patient.gender}</TableCell>
               <TableCell>{patient.occupation}</TableCell>
