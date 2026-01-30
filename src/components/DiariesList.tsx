@@ -18,7 +18,7 @@ const DiariesList = ({ diaries }: DiariesListProps) => {
         </div>
       ))}
     </>
-  )
+  );
 };
 
 export default DiariesList;

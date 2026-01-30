@@ -1,6 +1,19 @@
-import { useState, type Dispatch, type SyntheticEvent, type SetStateAction } from "react";
+import {
+  useState,
+  useEffect,
+  type Dispatch,
+  type SyntheticEvent,
+  type SetStateAction
+} from "react";
+import type {
+  DiaryEntry,
+  NonSensitiveDiaryEntry,
+  NotiType,
+  NewDiaryEntry
+} from "../types";
 import diaryService from "../services/diaryService";
-import type { NonSensitiveDiaryEntry } from "../types";
+import Notification from "./Notification";
+import { newEntryParser } from "../utils/newEntrySchema";
 
 interface DiaryFormProps {
   diaries: NonSensitiveDiaryEntry[]
@@ -8,29 +21,52 @@ interface DiaryFormProps {
 }
 
 const DiaryForm = ({ diaries, setDiaries }: DiaryFormProps) => {
+  const notiDefState = { msg: null, nType: null };
   const [date, setDate] = useState("");
   const [visibility, setVisibility] = useState("");
   const [weather, setWeather] = useState("");
   const [comment, setComment] = useState("");
+  const [noti, setNoti] = useState<NotiType>(notiDefState);
+
+  useEffect(() => {
+    if (!!noti.msg) {
+      setTimeout(() => setNoti(notiDefState), 5000);
+    }
+  }, [noti]);
 
   const handleSubmit = (e: SyntheticEvent) => {
     e.preventDefault();
-    const newEntry = { date, visibility, weather, comment };
+    if (!date && !visibility && !weather && !comment) return;
+    const result = newEntryParser({ date, visibility, weather, comment });
 
-    diaryService.postDiaries(newEntry).then((d) => {
-      console.log("New entry added:", d)
-      setDiaries(diaries.concat(d));
-    });
+    if (!result.success) {
+      const errorMsg = result.error.issues.map(iss => iss.message).join("\n");
+      console.log(errorMsg);
+      setNoti({ msg: errorMsg, nType: 0 });
+    } else {
+      const newEntry: NewDiaryEntry = result.data;
 
-    setDate("");
-    setVisibility("");
-    setWeather("");
-    setComment("");
-  }
+      diaryService.postDiaries(newEntry).then((d: string | DiaryEntry) => {
+        console.log(d)
+        if (typeof d === "string") setNoti({ msg: d, nType: 0 });
+        else {
+          console.log("New entry added:", d);
+          setNoti({ msg: "New entry added successfully!", nType: 1 });
+          setDiaries(diaries.concat(d));
+
+          setDate("");
+          setVisibility("");
+          setWeather("");
+          setComment("");
+        }
+      });
+    }
+  };
 
   return (
     <>
       <h2>Add New Entry</h2>
+      <Notification noti={noti} />
       <form
         onSubmit={handleSubmit}
         style={{ display: "flex", flexDirection: "column", gap: 10 }}
@@ -74,7 +110,7 @@ const DiaryForm = ({ diaries, setDiaries }: DiaryFormProps) => {
         <button type="submit" style={{ width: "fit-content" }}>Add</button>
       </form>
     </>
-  )
+  );
 };
 
 export default DiaryForm;

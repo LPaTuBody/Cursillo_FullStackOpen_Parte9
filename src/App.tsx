@@ -21,7 +21,7 @@ function App() {
       { tab === "diaries" && <DiariesList diaries={diaries} /> }
       { tab === "form" && <DiaryForm diaries={diaries} setDiaries={setDiaries} /> }
     </>
-  )
+  );
 }
 
 export default App;

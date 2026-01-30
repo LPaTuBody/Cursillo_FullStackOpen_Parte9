@@ -8,13 +8,24 @@ const getDiaries = async () => {
   return diaries.data;
 };
 
-// 
 const postDiaries = async (entry: any) => {
-  const newDiary = await axios.post<DiaryEntry>(URL, entry);
-  return newDiary.data
-}
+  try {
+    const newDiary = await axios.post<DiaryEntry>(URL, entry);
+    return newDiary.data;
+  } catch (err) {
+    if (axios.isAxiosError(err)) {
+      console.error(err.response);
+      return err.response?.data;
+    } else {
+      console.error(err);
+      let errMsg = "";
+      if (err instanceof Error) errMsg = err.message;
+      return errMsg
+    }
+  }
+};
 
 export default {
   getDiaries,
   postDiaries
-}
+};
