@@ -1,8 +1,12 @@
 import { Router, Request, Response } from "express";
-import { getNSDPatients, addPatient } from "../services/patientService";
 import { newPatient, Patient } from "../types";
 import newPatientParser from "../middleware/newPatientParserMw";
 import errorMiddleware from "../middleware/errorMw";
+import {
+  getNSDPatients,
+  addPatient,
+  getOnePatient
+} from "../services/patientService";
 
 const router = Router();
 
@@ -14,6 +18,20 @@ router.get("/", (_req, res) => {
   } catch (err) {
     console.log("Error fetching patients:", err);
     res.status(400).send("Error fetching patients");
+  }
+});
+
+router.get("/:id", (req, res) => {
+  const id = req.params.id;
+  if (!id || typeof id !== "string") {
+    res.status(400).send("Invalid ID provided");
+  }
+
+  const patient = getOnePatient(id);
+  if (!patient) res.status(404).send("Patient not found");
+  else {
+    console.log("Fetching one patient...", patient);
+    res.send(patient);
   }
 });
 

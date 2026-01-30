@@ -1,4 +1,4 @@
-import { z } from 'zod';
+import { object, z } from 'zod';
 import { Gender } from '../types';
 
 const newPatientSchema = z.object({
@@ -7,6 +7,7 @@ const newPatientSchema = z.object({
   ssn: z.string(),
   gender: z.enum(Gender),
   occupation: z.string(),
+  entries: z.array(object())
 });
 
 export default newPatientSchema;
