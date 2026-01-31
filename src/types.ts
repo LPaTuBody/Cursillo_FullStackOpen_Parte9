@@ -67,7 +67,7 @@ interface OccupationalHealthCareEntry extends BaseEntry {
 
 export type NoSensibleDataPat = Omit<Patient, "ssn">;
 
-export type newPatient = Omit<Patient, "id">;
+export type newPatient = Omit<Patient, "id" | "entries">;
 
 export type Entry =
   | HospitalEntry
