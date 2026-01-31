@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate, useMatch } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import {
   Table,
   TableBody,
@@ -14,6 +14,7 @@ import CircleOutlinedIcon from '@mui/icons-material/CircleOutlined';
 
 import patientService from "../../services/patients";
 import { type Patient, Gender } from "../../types";
+import EntriesTable from "./EntriesTable";
 
 interface genderCell {
   color: string,
@@ -23,23 +24,22 @@ interface genderCell {
 const PatientView = () => {
   const [patient, setPatient] = useState<Patient>();
   const navigate = useNavigate();
-  const matchpati = useMatch("/patient/:id");
-  console.log("matchea", matchpati?.params.id);
+  const { id } = useParams<{ id: string }>();
+
+  // console.log("ID", id);
 
   useEffect(() => {
-    patientService.getPatient(matchpati?.params.id).then((r) => {
-      console.log(r)
+    patientService.getPatient(id).then((r) => {
+      // console.log(r)
       if (typeof r === "string") navigate(`/error/${r}`);
       else setPatient(r);
     })
   }, []);
 
-  console.log(patient)
-
   const defineGenderIcon = (): genderCell => {
-    if (patient?.gender === Gender.Female) {
+    if (patient?.gender === Gender.F) {
       return { color: "pink", icon: <FemaleIcon /> }
-    } else if (patient?.gender === Gender.Male) {
+    } else if (patient?.gender === Gender.M) {
       return { color: "lightskyblue", icon: <MaleIcon /> }
     } else {
       return { color: "lightyellow", icon: <CircleOutlinedIcon /> }
@@ -56,14 +56,17 @@ const PatientView = () => {
     fontWeight: "bold"
   }
 
+  const tableStyle = {
+    backgroundColor: "rgba(237, 237, 237, 0.26)",
+    mt: 5,
+    mb: 3,
+    borderRadius: 3,
+    overflow: "hidden"
+  }
+
   return (
     <Box>
-      <Table sx={{
-        backgroundColor: "rgba(237, 237, 237, 0.26)",
-        mt: 5,
-        borderRadius: 3,
-        overflow: "hidden"
-      }}>
+      <Table sx={tableStyle}>
         <TableHead>
           <TableRow>
             <TableCell sx={{ fontWeight: "bold", width: "80%" }}>
@@ -94,6 +97,12 @@ const PatientView = () => {
           </TableRow>
         </TableBody>
       </Table>
+
+      <EntriesTable
+        patient={patient!}
+        tableStyle={tableStyle}
+        colorr={genderIcon.color}
+      />
     </Box>
   );
 };

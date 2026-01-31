@@ -1,22 +1,75 @@
-export interface Diagnosis {
-  code: string;
-  name: string;
-  latin?: string;
+export enum Gender {
+  M = "male",
+  F = "female",
+  N = "other"
 }
 
-export enum Gender {
-  Male = "male",
-  Female = "female",
-  Other = "other"
+export enum HealthCheckRating {
+  "Healthy" = 0,
+  "LowRisk" = 1,
+  "HighRisk" = 2,
+  "CriticalRisk" = 3
+}
+
+// --------
+
+export interface Diagnose {
+  code: string
+  name: string
+  latin?: string
 }
 
 export interface Patient {
-  id: string;
-  name: string;
-  occupation: string;
-  gender: Gender;
-  ssn?: string;
-  dateOfBirth?: string;
+  id: string
+  name: string
+  dateOfBirth: string
+  ssn: string
+  gender: Gender
+  occupation: string
+  entries: Entry[]
 }
 
-export type PatientFormValues = Omit<Patient, "id" | "entries">;
+interface BaseEntry {
+  id: string
+  date: string
+  specialist: string
+  description: string
+  diagnosisCodes?: Array<Diagnose["code"]>
+}
+
+interface HealthCheckEntry extends BaseEntry {
+  type: "HealthCheck"
+  healthCheckRating: HealthCheckRating
+}
+
+interface Discharge {
+  date: string
+  criteria: string
+}
+
+interface HospitalEntry extends BaseEntry {
+  type: "Hospital"
+  discharge: Discharge
+}
+
+interface SickLeave {
+  startDate: string
+  endDate: string
+}
+
+interface OccupationalHealthCareEntry extends BaseEntry {
+  type: "OccupationalHealthcare"
+  employerName: string
+  sickLeave?: SickLeave
+}
+
+// ---------
+
+export type NoSensibleDataPat = Omit<Patient, "ssn">;
+
+export type newPatient = Omit<Patient, "id">;
+
+export type Entry =
+  | HospitalEntry
+  | OccupationalHealthCareEntry
+  | HealthCheckEntry;
