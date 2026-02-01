@@ -1,11 +1,13 @@
 import { Router, Request, Response } from "express";
-import { newPatient, Patient } from "../types";
+import { newPatient, Patient, NewEntry, Entry } from "../types";
 import newPatientParser from "../middleware/newPatientParserMw";
 import errorMiddleware from "../middleware/errorMw";
+import newEntryParser from "../middleware/newEntryParser";
 import {
   getNSDPatients,
   addPatient,
-  getOnePatient
+  getOnePatient,
+  addNewEntry
 } from "../services/patientService";
 
 const router = Router();
@@ -42,6 +44,15 @@ router.post("/", newPatientParser, (
   const newPat = addPatient(req.body);
   console.log("New patient:", newPat);
   res.json(newPat);
+});
+
+router.post("/:id/entries", newEntryParser, (
+  req: Request<{ id: string }, unknown, NewEntry>,
+  res: Response<Entry>
+) => {
+  const newEntry = addNewEntry(req.body, req.params.id);
+  console.log("New entry:", newEntry);
+  res.json(newEntry);
 });
 
 router.use(errorMiddleware);
