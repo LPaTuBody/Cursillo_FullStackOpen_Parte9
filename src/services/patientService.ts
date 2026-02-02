@@ -36,7 +36,7 @@ export const getOnePatient = (id: string): Patient | undefined => {
 };
 
 export const addPatient = (entry: newPatient): Patient => {
-  const addedPatient = { id: uuid(), ...entry };
+  const addedPatient = { ...entry, id: uuid(), entries: [] };
   patiData.push(addedPatient);
   return addedPatient;
 };

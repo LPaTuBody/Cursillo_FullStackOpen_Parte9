@@ -27,10 +27,14 @@ router.get("/:id", (req, res) => {
   const id = req.params.id;
   if (!id || typeof id !== "string") {
     res.status(400).send("Invalid ID provided");
+    return;
   }
 
   const patient = getOnePatient(id);
-  if (!patient) res.status(404).send("Patient not found");
+  if (!patient) {
+    res.status(404).send("Patient not found");
+    return;
+  }
   else {
     console.log("Fetching one patient...", patient);
     res.send(patient);

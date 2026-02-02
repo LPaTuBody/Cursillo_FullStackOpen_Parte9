@@ -9,10 +9,16 @@ const newEntryParser = (
 ) => {
   try {
     const patient = patiData.find(p => p.id === req.params.id);
-    if (!patient) res.status(404).json({ error: "Patient not found" });
+    if (!patient) {
+      res.status(404).json({ error: "Patient not found" });
+      return;
+    }
 
     const result = newEntrySchema.safeParse(req.body);
-    if (!result.success) res.status(400).json(result.error.issues);
+    if (!result.success) {
+      res.status(400).json(result.error.issues);
+      return;
+    }
 
     req.body = result.data;
     next();
