@@ -10,12 +10,12 @@ import {
   TableRow,
   TableBody
 } from '@mui/material';
-import axios from 'axios';
 
-import { PatientFormValues, Patient } from "../../types";
+import { NewPatient, Patient } from "../../types";
 import AddPatientModal from "../AddPatientModal";
 import HealthRatingBar from "../HealthRatingBar";
 import patientService from "../../services/patients";
+import { getErrorMessage } from "../../utils/errorHelper";
 
 interface Props {
   patients: Patient[]
@@ -35,32 +35,13 @@ const PatientListPage = ({ patients, setPatients }: Props) => {
     setError(undefined);
   };
 
-  const submitNewPatient = async (values: PatientFormValues) => {
+  const submitNewPatient = async (values: NewPatient) => {
     try {
       const patient = await patientService.create(values);
       setPatients(patients.concat(patient));
       setModalOpen(false);
     } catch (e: unknown) {
-      if (axios.isAxiosError(e)) {
-        if (e?.response?.data && typeof e?.response?.data === "string") {
-          const message = e.response.data.replace('Something went wrong. Error: ', '');
-          console.error(message);
-          setError(message);
-        } else if (e?.response?.data && typeof e.response.data === "object") {
-          const errorData = e.response.data as { error: { path: string[], message: string }[] };
-          if (errorData.error && Array.isArray(errorData.error)) {
-            const messages = errorData.error.map(issue => `${issue.path.join('.')}: ${issue.message}`).join(', ');
-            setError(messages);
-          } else {
-            setError("Unrecognized validation error");
-          }
-        } else {
-          setError("Unrecognized axios error");
-        }
-      } else {
-        console.error("Unknown error", e);
-        setError("Unknown error");
-      }
+      setError(getErrorMessage(e));
     }
   };
 

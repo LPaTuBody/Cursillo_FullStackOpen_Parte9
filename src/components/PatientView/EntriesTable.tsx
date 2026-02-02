@@ -18,19 +18,14 @@ interface etProps {
 }
 
 const EntriesTable = ({ patient, tableStyle, colorr }: etProps) => {
-  const entradas = patient?.entries;
+  const entradas = patient.entries;
   const [diagnoses, setDiagnoses] = useState<Diagnose[]>();
 
-  console.log(entradas)
-
   useEffect(() => {
-    diagService.getAll().then(d => {
-      console.log(d)
-      setDiagnoses(d)
-    })
+    diagService.getAll().then(d => setDiagnoses(d));
   }, []);
-
-  console.log(diagnoses)
+  
+  if (!diagnoses) return <Typography>Loading...</Typography>;
 
   return (
     <Table sx={tableStyle}>
@@ -55,7 +50,7 @@ const EntriesTable = ({ patient, tableStyle, colorr }: etProps) => {
       </TableHead>
 
       <TableBody>
-        {entradas?.map(e => (
+        {entradas.map(e => (
           <TableRow key={e.id}>
             <TableCell width={"40%"}>
               {e.description}
@@ -65,7 +60,7 @@ const EntriesTable = ({ patient, tableStyle, colorr }: etProps) => {
             </TableCell>
             <TableCell width={"20%"}>
               {e.diagnosisCodes?.map(code => {
-                const diagnosis = diagnoses?.find(d => d.code === code);
+                const diagnosis = diagnoses.find(d => d.code === code);
                 return (
                   <Typography variant="body2" key={code} sx={{ mb: 1 }}>
                     <strong>{code}: </strong> {diagnosis?.name}

@@ -6,15 +6,17 @@ import {
   TableHead,
   TableCell,
   TableRow,
-  Box
+  Box,
+  Typography,
 } from "@mui/material";
 import FemaleIcon from "@mui/icons-material/Female";
 import MaleIcon from "@mui/icons-material/Male";
 import CircleOutlinedIcon from '@mui/icons-material/CircleOutlined';
 
 import patientService from "../../services/patients";
-import { type Patient, Gender } from "../../types";
+import { type Patient, Gender, Entry } from "../../types";
 import EntriesTable from "./EntriesTable";
+import AddEntryModalButton from "../AddEntryModal/AEMButton";
 
 interface genderCell {
   color: string,
@@ -26,20 +28,21 @@ const PatientView = () => {
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
 
-  // console.log("ID", id);
+  if (!id) throw new Error("Missing patient id");
 
   useEffect(() => {
     patientService.getPatient(id).then((r) => {
-      // console.log(r)
       if (typeof r === "string") navigate(`/error/${r}`);
       else setPatient(r);
     })
   }, []);
 
+  if (!patient) return <Typography>Loading...</Typography>;
+
   const defineGenderIcon = (): genderCell => {
-    if (patient?.gender === Gender.F) {
+    if (patient.gender === Gender.F) {
       return { color: "pink", icon: <FemaleIcon /> }
-    } else if (patient?.gender === Gender.M) {
+    } else if (patient.gender === Gender.M) {
       return { color: "lightskyblue", icon: <MaleIcon /> }
     } else {
       return { color: "lightyellow", icon: <CircleOutlinedIcon /> }
@@ -48,6 +51,14 @@ const PatientView = () => {
 
   const genderIcon = defineGenderIcon();
 
+  const updateEntries = (entry: Entry) => {
+    if (patient) {
+      setPatient({ ...patient, entries: patient.entries.concat(entry) });
+    }
+  };
+  
+
+  // styles
   const rightColumn = {
     display: "flex",
     alignItems: "center",
@@ -70,7 +81,7 @@ const PatientView = () => {
         <TableHead>
           <TableRow>
             <TableCell sx={{ fontWeight: "bold", width: "80%" }}>
-              {patient?.name}
+              {patient.name}
             </TableCell>
             <TableCell sx={{
               backgroundColor: genderIcon.color,
@@ -84,22 +95,24 @@ const PatientView = () => {
         </TableHead>
         <TableBody>
           <TableRow>
-            <TableCell>{patient?.ssn}</TableCell>
+            <TableCell>{patient.ssn}</TableCell>
             <TableCell sx={rightColumn}>SSN</TableCell>
           </TableRow>
           <TableRow>
-            <TableCell>{patient?.dateOfBirth}</TableCell>
+            <TableCell>{patient.dateOfBirth}</TableCell>
             <TableCell sx={rightColumn}>Date of Birth</TableCell>
           </TableRow>
           <TableRow>
-            <TableCell>{patient?.occupation}</TableCell>
+            <TableCell>{patient.occupation}</TableCell>
             <TableCell sx={rightColumn}>Occupation</TableCell>
           </TableRow>
         </TableBody>
       </Table>
 
+      <AddEntryModalButton patient={patient} onEntryAdded={updateEntries} />
+
       <EntriesTable
-        patient={patient!}
+        patient={patient}
         tableStyle={tableStyle}
         colorr={genderIcon.color}
       />
