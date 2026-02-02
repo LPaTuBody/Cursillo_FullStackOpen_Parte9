@@ -28,7 +28,7 @@ const getPatient = async (id: string | undefined): Promise<Patient | string> => 
       return errMsg;
     }
   }
-}
+};
 
 const create = async (object: NewPatient) => {
   const { data } = await axios.post<Patient>(

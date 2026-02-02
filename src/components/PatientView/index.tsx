@@ -34,18 +34,18 @@ const PatientView = () => {
     patientService.getPatient(id).then((r) => {
       if (typeof r === "string") navigate(`/error/${r}`);
       else setPatient(r);
-    })
-  }, []);
+    });
+  }, [id, navigate]);
 
   if (!patient) return <Typography>Loading...</Typography>;
 
   const defineGenderIcon = (): genderCell => {
     if (patient.gender === Gender.F) {
-      return { color: "pink", icon: <FemaleIcon /> }
+      return { color: "pink", icon: <FemaleIcon /> };
     } else if (patient.gender === Gender.M) {
-      return { color: "lightskyblue", icon: <MaleIcon /> }
+      return { color: "lightskyblue", icon: <MaleIcon /> };
     } else {
-      return { color: "lightyellow", icon: <CircleOutlinedIcon /> }
+      return { color: "lightyellow", icon: <CircleOutlinedIcon /> };
     }
   };
 
@@ -65,7 +65,7 @@ const PatientView = () => {
     justifyContent: "center",
     backgroundColor: "whitesmoke",
     fontWeight: "bold"
-  }
+  };
 
   const tableStyle = {
     backgroundColor: "rgba(237, 237, 237, 0.26)",
@@ -73,7 +73,7 @@ const PatientView = () => {
     mb: 3,
     borderRadius: 3,
     overflow: "hidden"
-  }
+  };
 
   return (
     <Box>

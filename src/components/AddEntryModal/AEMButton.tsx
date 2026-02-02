@@ -14,7 +14,10 @@ const AddEntryModalButton = ({ patient, onEntryAdded }: AEMBProps) => {
   const [modalSt, setModalSt] = useState(false);
   const [error, setError] = useState("");
 
-  const closeModal = (): void => setModalSt(false);
+  const closeModal = (): void => {
+    setModalSt(false);
+    setError("");
+  };
 
   const onSubmitEntry = async (entries: NewEntry) => {
     try {
@@ -43,7 +46,7 @@ const AddEntryModalButton = ({ patient, onEntryAdded }: AEMBProps) => {
         error={error}
       />
     </>
-  )
+  );
 };
 
 export default AddEntryModalButton;

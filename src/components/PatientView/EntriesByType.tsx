@@ -2,7 +2,7 @@ import { Box, Typography } from "@mui/material";
 import LocalHospitalIcon from '@mui/icons-material/LocalHospital';
 import WorkIcon from '@mui/icons-material/Work';
 import FavoriteIcon from '@mui/icons-material/Favorite';
-import type { Entry, HealthCheckRating } from "../../types";
+import { Entry, HealthCheckRating, EntryTypes } from "../../types";
 
 const assertNever = (value: never): never => {
   throw new Error(
@@ -22,7 +22,7 @@ const HealthRatingIcon = ({ rating }: { rating: HealthCheckRating }) => {
 
 const EntryDetails = ({ entry }: { entry: Entry }) => {
   switch (entry.type) {
-    case "HealthCheck":
+    case EntryTypes.HC:
       return (
         <Box>
           <Box display="flex" alignItems="center" gap={1}>
@@ -33,7 +33,7 @@ const EntryDetails = ({ entry }: { entry: Entry }) => {
           </Box>
         </Box>
       );
-    case "Hospital":
+    case EntryTypes.H:
       return (
         <Box>
           <Box display="flex" alignItems="center" gap={1} mb={1}>
@@ -50,7 +50,7 @@ const EntryDetails = ({ entry }: { entry: Entry }) => {
           </Typography>
         </Box>
       );
-    case "OccupationalHealthcare":
+    case EntryTypes.OHC:
       return (
         <Box>
           <Box display="flex" alignItems="center" gap={1}>
