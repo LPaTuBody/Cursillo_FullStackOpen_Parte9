@@ -13,8 +13,9 @@ import FemaleIcon from "@mui/icons-material/Female";
 import MaleIcon from "@mui/icons-material/Male";
 import CircleOutlinedIcon from '@mui/icons-material/CircleOutlined';
 
+import diagService from "../../services/diagnoses";
 import patientService from "../../services/patients";
-import { type Patient, Gender, Entry } from "../../types";
+import { type Patient, type Diagnose, Gender, Entry } from "../../types";
 import EntriesTable from "./EntriesTable";
 import AddEntryModalButton from "../AddEntryModal/AEMButton";
 
@@ -25,6 +26,7 @@ interface genderCell {
 
 const PatientView = () => {
   const [patient, setPatient] = useState<Patient>();
+  const [diagnoses, setDiagnoses] = useState<Diagnose[]>();
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
 
@@ -37,7 +39,11 @@ const PatientView = () => {
     });
   }, [id, navigate]);
 
-  if (!patient) return <Typography>Loading...</Typography>;
+  useEffect(() => {
+    diagService.getAll().then(d => setDiagnoses(d));
+  }, []);
+
+  if (!patient || !diagnoses) return <Typography>Loading...</Typography>;
 
   const defineGenderIcon = (): genderCell => {
     if (patient.gender === Gender.F) {
@@ -56,7 +62,7 @@ const PatientView = () => {
       setPatient({ ...patient, entries: patient.entries.concat(entry) });
     }
   };
-  
+
 
   // styles
   const rightColumn = {
@@ -109,10 +115,15 @@ const PatientView = () => {
         </TableBody>
       </Table>
 
-      <AddEntryModalButton patient={patient} onEntryAdded={updateEntries} />
+      <AddEntryModalButton
+        patient={patient}
+        onEntryAdded={updateEntries}
+        diagCodesList={diagnoses.map(d => d.code)}
+      />
 
       <EntriesTable
         patient={patient}
+        diagnoses={diagnoses}
         tableStyle={tableStyle}
         colorr={genderIcon.color}
       />

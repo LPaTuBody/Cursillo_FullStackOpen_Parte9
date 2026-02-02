@@ -8,9 +8,12 @@ import { getErrorMessage } from "../../utils/errorHelper";
 interface AEMBProps {
   patient: Patient;
   onEntryAdded: (entry: Entry) => void;
+  diagCodesList: string[]
 }
 
-const AddEntryModalButton = ({ patient, onEntryAdded }: AEMBProps) => {
+const AddEntryModalButton = (
+  { patient, onEntryAdded, diagCodesList }: AEMBProps
+) => {
   const [modalSt, setModalSt] = useState(false);
   const [error, setError] = useState("");
 
@@ -44,6 +47,7 @@ const AddEntryModalButton = ({ patient, onEntryAdded }: AEMBProps) => {
         closeModal={closeModal}
         onSubmitEntry={onSubmitEntry}
         error={error}
+        diagCodesList={diagCodesList}
       />
     </>
   );

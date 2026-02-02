@@ -1,4 +1,3 @@
-import { useState, useEffect } from "react";
 import {
   Table,
   TableBody,
@@ -8,24 +7,17 @@ import {
   Typography
 } from "@mui/material";
 import type { Patient, Diagnose } from "../../types";
-import diagService from "../../services/diagnoses";
 import EntryDetails from "./EntriesByType";
 
 interface etProps {
   patient: Patient
+  diagnoses: Diagnose[]
   tableStyle: object
   colorr: string
 }
 
-const EntriesTable = ({ patient, tableStyle, colorr }: etProps) => {
+const EntriesTable = ({ patient, diagnoses, tableStyle, colorr }: etProps) => {
   const entradas = patient.entries;
-  const [diagnoses, setDiagnoses] = useState<Diagnose[]>();
-
-  useEffect(() => {
-    diagService.getAll().then(d => setDiagnoses(d));
-  }, []);
-  
-  if (!diagnoses) return <Typography>Loading...</Typography>;
 
   return (
     <Table sx={tableStyle}>

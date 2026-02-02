@@ -14,10 +14,11 @@ interface Props {
   closeModal: () => void
   onSubmitEntry: (val: NewEntry) => void
   error?: string
+  diagCodesList: string[]
 }
 
 const AddEntryModal = (
-  { openModal, closeModal, onSubmitEntry, error }: Props
+  { openModal, closeModal, onSubmitEntry, error, diagCodesList }: Props
 ) => (
   <Dialog fullWidth open={openModal} onClose={() => closeModal()}>
     <DialogTitle>Add a New Entry</DialogTitle>
@@ -27,6 +28,7 @@ const AddEntryModal = (
       <AddEntryForm
         closeModal={closeModal}
         onSubmitEntry={onSubmitEntry}
+        diagCodesList={diagCodesList}
       />
     </DialogContent>
   </Dialog>

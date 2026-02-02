@@ -13,13 +13,16 @@ import { type NewEntry, EntryTypes, HealthCheckRating } from "../../types";
 interface AEFProps {
   closeModal: () => void
   onSubmitEntry: (val: NewEntry) => void
+  diagCodesList: string[]
 }
 
-const AddEntryForm = ({ closeModal, onSubmitEntry }: AEFProps) => {
+const AddEntryForm = (
+  { closeModal, onSubmitEntry, diagCodesList }: AEFProps
+) => {
   const [date, setDate] = useState("");
   const [specialist, setSpecialist] = useState("");
   const [description, setDescription] = useState("");
-  const [diagCodes, setDiagCodes] = useState("");
+  const [diagCodes, setDiagCodes] = useState<string[]>([]);
   const [eType, setEType] = useState("");
   const [hcRating, setHcRating] = useState<HealthCheckRating>(0);
   const [dischargeDate, setDisDate] = useState("");
@@ -31,13 +34,12 @@ const AddEntryForm = ({ closeModal, onSubmitEntry }: AEFProps) => {
   const onSubmit = (e: SyntheticEvent): void => {
     e.preventDefault();
     if (!eType) throw new Error("An entry type need to be setted.");
-    const parsedCodes = diagCodes.split(",").map(v => v.trim());
     const baseInputs = {
       date,
       specialist,
       description,
-      diagnosisCodes: parsedCodes,
-    }
+      diagnosisCodes: diagCodes,
+    };
 
     if (eType === EntryTypes.HC) {
       onSubmitEntry({
@@ -66,7 +68,7 @@ const AddEntryForm = ({ closeModal, onSubmitEntry }: AEFProps) => {
     display: "flex",
     flexWrap: "wrap",
     justifyContent: "space-between",
-  }
+  };
 
   return (
     <Box >
@@ -77,11 +79,12 @@ const AddEntryForm = ({ closeModal, onSubmitEntry }: AEFProps) => {
             required
             label="Date"
             name="date"
-            placeholder="YYYY-MM-DD"
+            type="date"
             margin="normal"
             value={date}
             onChange={({ target }) => setDate(target.value)}
             sx={{ width: "49%" }}
+            InputLabelProps={{ shrink: true }}
           />
           <TextField
             required
@@ -101,15 +104,19 @@ const AddEntryForm = ({ closeModal, onSubmitEntry }: AEFProps) => {
             onChange={({ target }) => setDescription(target.value)}
             sx={{ width: "49%" }}
           />
-          <TextField
-            required
-            label="Diagnosis Codes"
-            name="diagCodes"
-            margin="normal"
-            value={diagCodes}
-            onChange={({ target }) => setDiagCodes(target.value)}
-            sx={{ width: "49%" }}
-          />
+          <FormControl margin="normal" required sx={{ width: "49%" }}>
+            <InputLabel id="diagnosis-codes">Diagnosis Codes</InputLabel>
+            <Select
+              labelId="diagnosis-codes"
+              multiple
+              value={diagCodes}
+              onChange={({ target }) => setDiagCodes(target.value as string[])}
+            >
+              {diagCodesList.map(dc => (
+                <MenuItem value={dc} key={dc}>{dc}</MenuItem>
+              ))}
+            </Select>
+          </FormControl>
         </Box>
 
         <FormControl fullWidth margin="normal" required>
@@ -154,10 +161,11 @@ const AddEntryForm = ({ closeModal, onSubmitEntry }: AEFProps) => {
               required
               label="Discharge Date"
               name="discharge-date"
-              placeholder="YYYY-MM-DD"
+              type="date"
               value={dischargeDate}
               onChange={({ target }) => setDisDate(target.value)}
               sx={{ width: "49%" }}
+              InputLabelProps={{ shrink: true }}
             />
             <TextField
               fullWidth
@@ -187,20 +195,22 @@ const AddEntryForm = ({ closeModal, onSubmitEntry }: AEFProps) => {
               <TextField
                 label="Start Date"
                 name="start-date"
-                placeholder="YYYY-MM-DD"
+                type="date"
                 margin="normal"
                 value={startDate}
                 onChange={({ target }) => setStartDate(target.value)}
                 sx={{ width: "49%" }}
+                InputLabelProps={{ shrink: true }}
               />
               <TextField
                 label="End Date"
                 name="end-date"
-                placeholder="YYYY-MM-DD"
+                type="date"
                 margin="normal"
                 value={endDate}
                 onChange={({ target }) => setEndDate(target.value)}
                 sx={{ width: "49%" }}
+                InputLabelProps={{ shrink: true }}
               />
             </Box>
           </>
